@@ -23,8 +23,9 @@ from delta.tables import *
 
 
 logger.info("Produzindo novos dados...")
+# lendo os dados na pasta staging
 enemnovo = (
-    spark.read.format("delta")
+    spark.read.format("delta") 
     .load("s3://julioszeferino-datalake-projeto01-tf/staging-zone/enem")
 )
 
@@ -82,8 +83,10 @@ inscricoes = [190001595656,
 
 
 logger.info("Reduz a 50 casos e faz updates internos no municipio de residencia")
+# substituindo a informacao da coluna NO_MUNICIPIO_RESIDENCIA para "NOVA CIDADE"
+# e a informacao da coluna CO_MUNICIPIO_RESIDENCIA para "10000000"
 enemnovo = enemnovo.where(enemnovo.NU_INSCRICAO.isin(inscricoes))
-enemnovo = enemnovo.withColumn("NO_MUNICIPIO_RESIDENCIA", lit("NOVA CIDADE")).withColumn("CO_MUNICIPIO_RESIDENCIA", lit(10000000))
+enemnovo = enemnovo.withColumn("NO_MUNICIPIO_PROVA", lit("NOVA CIDADE")).withColumn("CO_MUNICIPIO_PROVA", lit(10000000))
 
 
 logger.info("Pega os dados do Enem velhos na tabela Delta...")
@@ -94,14 +97,14 @@ logger.info("Realiza o UPSERT...")
 (
     enemvelho.alias("old")
     .merge(enemnovo.alias("new"), "old.NU_INSCRICAO = new.NU_INSCRICAO")
-    .whenMatchedUpdateAll()
-    .whenNotMatchedInsertAll()
+    .whenMatchedUpdateAll() # quanto der match, atualiza tudo
+    .whenNotMatchedInsertAll() # se nao encontrar, vai inserir
     .execute()
 )
 
 logger.info("Atualizacao completa! \n\n")
 
 logger.info("Gera manifesto symlink...")
-enemvelho.generate("symlink_format_manifest")
+enemvelho.generate("symlink_format_manifest") # permitindo que o glue leia os dados e sejam consultados pelo athena
 
 logger.info("Manifesto gerado.")

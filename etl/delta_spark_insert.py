@@ -26,8 +26,8 @@ print("Writing delta table...")
 (
     enem
     .write
-    .mode("overwrite")
-    .format("delta")
+    .mode("overwrite") # escreve por cima se existir
+    .format("delta") # formato delta
     .partitionBy("year")
-    .save("s3://julioszeferino-datalake-projeto01-tf/staging-zone/enem")
+    .save("s3://julioszeferino-datalake-projeto01-tf/staging-zone/enem") # endereco onde sera salvo
 )

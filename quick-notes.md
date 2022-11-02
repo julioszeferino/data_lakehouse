@@ -23,3 +23,17 @@
     Name: eventoteste
 
     Save changes > Test
+
+    Foi necessario alterar os codigos iarn no arquivo infrastructure iam.tf
+
+
+## deletando os recursos
+```bash
+$ cd infrastructure
+$ terraform init
+$ touch lambda_function_payload.zip # para ser possivel deletar a funcao lambda localmente.
+$ terraform destroy
+```
+
+> O terraform nao vai conseguir destruir as coisas dentro do s3 que foram criadas em tempo de execucao.
+> Basta abrir a AWS e excluir todos os dados dentro do bucket que havia sido criado e rodar o comando terraform destroy novamente
