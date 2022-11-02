@@ -1,1 +1,4 @@
 *.csv
+data/
+quick-notes.md
+config.yml
