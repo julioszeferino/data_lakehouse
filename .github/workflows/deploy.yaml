@@ -41,7 +41,7 @@ jobs:
 
     # configurando a funcao lambda
     - name: Build lambda package
-    - run: |
+      run: |
         sh scripts/build_lambda_package.sh
 
     - name: IaC Apply
