@@ -3,19 +3,27 @@ import boto3
 def handler(event, context):
     """
     Lambda function that starts a job flow in EMR.
+
+    :params event: o evento que disparou a função
+    :params context: o contexto da função
+
+    Nesta funcao nao estamos interagindo com o evento e o contexto
     """
+    # criando um cliente do emr
     client = boto3.client('emr', region_name='us-east-2')
 
+    # criando um cluster spark no emr e passa steps para serem executados
     cluster_id = client.run_job_flow(
-                Name='EMR-julioszeferino-IGTI-delta',
-                ServiceRole='EMR_DefaultRole',
-                JobFlowRole='EMR_EC2_DefaultRole',
-                VisibleToAllUsers=True,
-                LogUri='s3://julioszeferino-datalake-projeto01-tf/emr-logs',
-                ReleaseLabel='emr-6.3.0',
+                Name='EMR-julioszeferino-IGTI-delta', # nome do cluster
+                ServiceRole='EMR_DefaultRole', # role do servico
+                JobFlowRole='EMR_EC2_DefaultRole', # role do servico
+                VisibleToAllUsers=True, # estara visivel para todos os usuarios
+                LogUri='s3://julioszeferino-datalake-projeto01-tf/emr-logs', # caminho dos logs
+                ReleaseLabel='emr-6.3.0', # versao do emr
                 Instances={
                     'InstanceGroups': [
                         {
+                            # instancia master
                             'Name': 'Master nodes',
                             'Market': 'SPOT',
                             'InstanceRole': 'MASTER',
@@ -23,6 +31,7 @@ def handler(event, context):
                             'InstanceCount': 1,
                         },
                         {
+                            # worker 1
                             'Name': 'Worker nodes',
                             'Market': 'SPOT',
                             'InstanceRole': 'CORE',
@@ -30,12 +39,13 @@ def handler(event, context):
                             'InstanceCount': 1,
                         }
                     ],
-                    'Ec2KeyName': 'julioszeferino-igti-teste',
-                    'KeepJobFlowAliveWhenNoSteps': True,
-                    'TerminationProtected': False,
-                    'Ec2SubnetId': 'subnet-1df20360'
+                    'Ec2KeyName': 'julioszeferino-igti-teste', # *ver o quick-notes.md -> criacao keypair
+                    'KeepJobFlowAliveWhenNoSteps': True, # manter o cluster ativo sem steps executando
+                    'TerminationProtected': False, # nao proteger o cluster de ser deletado
+                    'Ec2SubnetId': 'subnet-00073236dde29eda6' # *ver o quick-notes.md -> criacao subnet
                 },
 
+                # definindo as aplicacoes do cluster EMR
                 Applications=[
                     {'Name': 'Spark'},
                     {'Name': 'Hive'},
@@ -46,7 +56,9 @@ def handler(event, context):
                     {'Name': 'Livy'},
                 ],
 
+                # definindo os steps do cluster EMR
                 Configurations=[{
+                    # configuracoes do ambiente spark
                     "Classification": "spark-env",
                     "Properties": {},
                     "Configurations": [{
@@ -80,9 +92,11 @@ def handler(event, context):
                     }
                 ],
                 
-                StepConcurrencyLevel=1,
+                StepConcurrencyLevel=1, # concorrencia de steps, apenas 1 por vez
                 
+                # definicao dos steps
                 Steps=[{
+                    # STEP 1 -> insert dados
                     'Name': 'Delta Insert do ENEM',
                     'ActionOnFailure': 'CONTINUE',
                     'HadoopJarStep': {
@@ -98,6 +112,7 @@ def handler(event, context):
                     }
                 },
                 {
+                    # STEP 2 -> update dados
                     'Name': 'Simulacao e UPSERT do ENEM',
                     'ActionOnFailure': 'CONTINUE',
                     'HadoopJarStep': {
@@ -114,6 +129,7 @@ def handler(event, context):
                 }],
             )
     
+    # retorno da funcao lambda
     return {
         'statusCode': 200,
         'body': f"Started job flow {cluster_id['JobFlowId']}"
