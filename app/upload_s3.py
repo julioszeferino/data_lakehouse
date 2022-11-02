@@ -7,9 +7,6 @@ from app.helpers import logs
 def upload_file(config_path):
     """
     Funcao que realiza o upload do arquivo para a AWS S3.
-
-    :
-
     """
     with open(config_path) as conf_file:
         config = yaml.safe_load(conf_file)

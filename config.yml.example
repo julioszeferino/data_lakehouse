@@ -1,10 +1,15 @@
+crawler:
+  url: "https://download.inep.gov.br/microdados/microdados_enem_2019.zip"
+  data: "data"
+  certificado: "cert_inep.pem"
+
 aws:
   credentials:
-    aws_secret_key: ""
+    aws_secret: ""
     aws_key: ""
 
 s3:
   data:
-    filename: "data/microdados_enem_2019/DADOS/MICRODADOS_ENEM_2019.csv"
-    bucket: "julioszeferino-datalake-projeto01-tf"
+    filename: "data/DADOS/MICRODADOS_ENEM_2019.csv"
+    bucket: ""
     objectname: "raw-data/enem/year=2019/MICRODADOS_ENEM_2019.csv"
