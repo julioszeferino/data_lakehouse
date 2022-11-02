@@ -15,3 +15,11 @@
 - Clicar em um cluster que ja havia sido criado
 - Procurar pelo subnet id
 - No caso, foi esse aqui: subnet-00073236dde29eda6
+
+## Executar a funcao lambda na aws
+- Acessar a pagina das funcoes e clicar na funcao lambda criada
+- Clicar Test > New Event 
+    Template: hello-world
+    Name: eventoteste
+
+    Save changes > Test

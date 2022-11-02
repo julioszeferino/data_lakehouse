@@ -1,0 +1,10 @@
+aws:
+  credentials:
+    aws_secret_key: ""
+    aws_key: ""
+
+s3:
+  data:
+    filename: "data/microdados_enem_2019/DADOS/MICRODADOS_ENEM_2019.csv"
+    bucket: "julioszeferino-datalake-projeto01-tf"
+    objectname: "raw-data/enem/year=2019/MICRODADOS_ENEM_2019.csv"
